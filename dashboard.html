@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<!--
+=============================================================================
+SMART ENERGY GRID DASHBOARD
+TimescaleDB Performance Analysis Project
+=============================================================================
+
+PURPOSE:
+    Analytics dashboard for visualizing energy consumption patterns
+    and TimescaleDB performance metrics.
+
+FEATURES:
+    - Real-time meter readings
+    - Daily consumption patterns (today vs yesterday)
+    - Weekly trends visualization
+    - Regional breakdown (by meter prefix)
+    - Performance metrics panel
+
+NOTE:
+    This is a template. Add your actual dashboard implementation here.
+    The dashboard should connect to TimescaleDB on localhost:5434.
+
+=============================================================================
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Energy Grid Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #00d4ff;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+        
+        .header p {
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .card h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .metric-box {
+            background: rgba(0, 212, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .performance-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .performance-table th,
+        .performance-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .performance-table th {
+            color: #00d4ff;
+        }
+        
+        .best {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚡ Smart Energy Grid Monitor</h1>
+        <p>TimescaleDB Performance Analysis Dashboard | MSDA9215 Big Data Analytics</p>
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Key Metrics -->
+        <div class="card">
+            <h2>📊 System Overview</h2>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">4.03M</div>
+                    <div class="metric-label">Total Readings</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">1,000</div>
+                    <div class="metric-label">Smart Meters</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">14</div>
+                    <div class="metric-label">Days of Data</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">5 min</div>
+                    <div class="metric-label">Reading Interval</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chunk Performance -->
+        <div class="card">
+            <h2>🔧 Chunk Strategy Performance</h2>
+            <div class="chart-container">
+                <canvas id="chunkChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Daily Pattern -->
+        <div class="card">
+            <h2>📈 Daily Consumption Pattern</h2>
+            <div class="chart-container">
+                <canvas id="dailyChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Compression Stats -->
+        <div class="card">
+            <h2>💾 Compression Results</h2>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">390 MB</div>
+                    <div class="metric-label">Before Compression</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">183 MB</div>
+                    <div class="metric-label">After Compression</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">53%</div>
+                    <div class="metric-label">Space Saved</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">2.1x</div>
+                    <div class="metric-label">Compression Ratio</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Performance Table -->
+        <div class="card">
+            <h2>⏱️ Query Performance Comparison</h2>
+            <table class="performance-table">
+                <tr>
+                    <th>Query</th>
+                    <th>3-Hour</th>
+                    <th>1-Day</th>
+                    <th>1-Week</th>
+                </tr>
+                <tr>
+                    <td>Q1: Hourly avg</td>
+                    <td>295.53 ms</td>
+                    <td>181.37 ms</td>
+                    <td class="best">86.24 ms</td>
+                </tr>
+                <tr>
+                    <td>Q2: Peak periods</td>
+                    <td class="best">414.62 ms</td>
+                    <td>1,238.10 ms</td>
+                    <td>972.51 ms</td>
+                </tr>
+                <tr>
+                    <td>Q3: Monthly/meter</td>
+                    <td>1,757.17 ms</td>
+                    <td>1,629.75 ms</td>
+                    <td class="best">1,444.98 ms</td>
+                </tr>
+                <tr>
+                    <td>Q4: Full scan</td>
+                    <td>340.42 ms</td>
+                    <td class="best">188.86 ms</td>
+                    <td>239.31 ms</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Continuous Aggregates -->
+        <div class="card">
+            <h2>🚀 Continuous Aggregate Speedup</h2>
+            <div class="chart-container">
+                <canvas id="aggregateChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>Smart Energy Grid Monitoring System | TimescaleDB Analysis Project</p>
+        <p>Group: Niyonagize Festus, Mutuyeyesu Honorine, Tuyambaze Joseph</p>
+    </div>
+    
+    <script>
+        // Chart 1: Chunk Performance
+        new Chart(document.getElementById('chunkChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Q1: Hourly', 'Q2: Peak', 'Q3: Monthly', 'Q4: Full'],
+                datasets: [
+                    {
+                        label: '3-Hour Chunks',
+                        data: [295.53, 414.62, 1757.17, 340.42],
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)'
+                    },
+                    {
+                        label: '1-Day Chunks',
+                        data: [181.37, 1238.10, 1629.75, 188.86],
+                        backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                    },
+                    {
+                        label: '1-Week Chunks',
+                        data: [86.24, 972.51, 1444.98, 239.31],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { 
+                        title: { display: true, text: 'Time (ms)', color: '#fff' },
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: { 
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Chart 2: Daily Pattern
+        new Chart(document.getElementById('dailyChart'), {
+            type: 'line',
+            data: {
+                labels: ['00', '02', '04', '06', '08', '10', '12', '14', '16', '18', '20', '22'],
+                datasets: [{
+                    label: 'Average Power (W)',
+                    data: [350, 350, 350, 2250, 2250, 1150, 1150, 1150, 1150, 2250, 2250, 2250],
+                    borderColor: '#00d4ff',
+                    backgroundColor: 'rgba(0, 212, 255, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#fff' } }
+                },
+                scales: {
+                    y: { 
+                        title: { display: true, text: 'Power (W)', color: '#fff' },
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: { 
+                        title: { display: true, text: 'Hour of Day', color: '#fff' },
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+        
+        // Chart 3: Aggregate Speedup
+        new Chart(document.getElementById('aggregateChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Raw Data Query', 'Continuous Aggregate'],
+                datasets: [{
+                    label: 'Execution Time (ms)',
+                    data: [59.42, 3.21],
+                    backgroundColor: ['rgba(255, 99, 132, 0.7)', 'rgba(75, 192, 192, 0.7)']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: '18x Speedup with Continuous Aggregates',
+                        color: '#00ff88',
+                        font: { size: 14 }
+                    }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true, text: 'Time (ms)', color: '#fff' },
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    y: { 
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
