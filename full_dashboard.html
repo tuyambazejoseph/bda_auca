@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Energy Grid Dashboard - Complete Analysis</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        h1 { 
+            text-align: center; 
+            color: #00d4ff; 
+            font-size: 2.5em;
+            text-shadow: 0 0 20px rgba(0,212,255,0.5);
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .section { 
+            background: rgba(255,255,255,0.05); 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .section h2 {
+            color: #00d4ff;
+            border-bottom: 2px solid #00d4ff;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); 
+            gap: 20px; 
+        }
+        .chart { 
+            background: rgba(255,255,255,0.03); 
+            border-radius: 10px; 
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #00d4ff22, #00d4ff11);
+            border: 1px solid #00d4ff44;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        .stat-card .label {
+            color: #888;
+            font-size: 0.9em;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 15px 0;
+        }
+        th { 
+            background: #00d4ff22; 
+            color: #00d4ff;
+            padding: 12px; 
+            text-align: left; 
+            border-bottom: 2px solid #00d4ff;
+        }
+        td { 
+            padding: 10px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        tr:hover { background: rgba(0,212,255,0.05); }
+        .highlight { color: #00ff88; font-weight: bold; }
+        .warning { color: #ffaa00; }
+        .danger { color: #ff4444; }
+    </style>
+</head>
+<body>
+    <h1>⚡ Smart Energy Grid Monitoring Dashboard</h1>
+    <p class="subtitle">TimescaleDB Performance Analysis | 2026-01-06 02:09:07</p>
+
+    <!-- SUMMARY STATS -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="value">4,033,000</div>
+            <div class="label">Total Readings</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">1,000</div>
+            <div class="label">Smart Meters</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">14 Days</div>
+            <div class="label">Data Period</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">3.0x</div>
+            <div class="label">Aggregate Speedup</div>
+        </div>
+        <div class="stat-card">
+            <div class="value">53%</div>
+            <div class="label">Compression Savings</div>
+        </div>
+    </div>
+
+    <!-- SECTION 1: REAL-TIME & DAILY PATTERNS -->
+    <div class="section">
+        <h2>📊 1. Real-Time & Daily Consumption Patterns</h2>
+        <div class="grid">
+            <div class="chart" id="daily_comparison" style="height:400px;"></div>
+            <div class="chart" id="hourly_distribution" style="height:400px;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 2: WEEKLY TRENDS -->
+    <div class="section">
+        <h2>📈 2. Weekly Trends Visualization</h2>
+        <div class="grid">
+            <div class="chart" id="weekly_energy" style="height:400px;"></div>
+            <div class="chart" id="weekly_power" style="height:400px;"></div>
+        </div>
+    </div>
+
+    <!-- SECTION 3: REGIONAL ANALYSIS -->
+    <div class="section">
+        <h2>🗺️ 3. Monthly Energy Usage by Region</h2>
+        <div class="grid">
+            <div class="chart" id="regional_pie" style="height:400px;"></div>
+            <div class="chart" id="regional_bar" style="height:400px;"></div>
+        </div>
+        <table>
+            <tr>
+                <th>Region</th>
+                <th>Total Energy (kWh)</th>
+                <th>Avg Power (W)</th>
+                <th>Readings</th>
+            </tr>
+            <tr><td>Region 0 (Central)</td><td>319,036.50</td><td>1,327.94</td><td>2,883,000</td></tr><tr><td>Region 0 (Central)</td><td>127,532.83</td><td>1,330.78</td><td>1,150,000</td></tr>
+        </table>
+    </div>
+
+    <!-- SECTION 4: PERFORMANCE METRICS -->
+    <div class="section">
+        <h2>⚡ 4. Query Performance: Raw Data vs Continuous Aggregates</h2>
+        <div class="grid">
+            <div class="chart" id="perf_comparison" style="height:400px;"></div>
+            <div class="chart">
+                <h3>Performance Results</h3>
+                <table>
+                    <tr><th>Query Type</th><th>Raw Query</th><th>Aggregate</th><th>Speedup</th></tr>
+                    <tr>
+                        <td>15-Minute Buckets</td>
+                        <td>71.17 ms</td>
+                        <td class="highlight">23.40 ms</td>
+                        <td class="highlight">3.0x faster</td>
+                    </tr>
+                    <tr>
+                        <td>Hourly Buckets</td>
+                        <td>94.71 ms</td>
+                        <td class="highlight">14.00 ms</td>
+                        <td class="highlight">6.8x faster</td>
+                    </tr>
+                </table>
+                <p style="margin-top:20px; color:#888;">
+                    <strong>Why aggregates are faster:</strong> Pre-computed summaries eliminate the need 
+                    to scan millions of rows. TimescaleDB stores aggregated results, making queries 
+                    instant regardless of underlying data size.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 5: CHUNK STRATEGY -->
+    <div class="section">
+        <h2>🧩 5. Chunk Strategy Comparison</h2>
+        <div class="grid">
+            <div class="chart" id="chunk_comparison" style="height:400px;"></div>
+            <div class="chart">
+                <h3>Chunk Configuration Details</h3>
+                <table>
+                    <tr><th>Strategy</th><th>Interval</th><th>Chunks</th><th>Query Time</th><th>Best For</th></tr>
+                    <tr>
+                        <td>Small Chunks</td>
+                        <td>3 hours</td>
+                        <td>113</td>
+                        <td>233.41 ms</td>
+                        <td>Recent data queries</td>
+                    </tr>
+                    <tr>
+                        <td>Medium Chunks</td>
+                        <td>1 day</td>
+                        <td>15</td>
+                        <td class="highlight">132.90 ms</td>
+                        <td>Balanced workloads</td>
+                    </tr>
+                    <tr>
+                        <td>Large Chunks</td>
+                        <td>1 week</td>
+                        <td>3</td>
+                        <td>80.19 ms</td>
+                        <td>Historical analysis</td>
+                    </tr>
+                </table>
+                <p style="margin-top:20px; color:#888;">
+                    <strong>Recommendation:</strong> 1-day chunks provide the best balance between 
+                    query performance and management overhead for this energy monitoring use case.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 6: STORAGE & COMPRESSION -->
+    <div class="section">
+        <h2>💾 6. Storage Efficiency & Compression</h2>
+        <div class="grid">
+            <div class="chart" id="storage_comparison" style="height:400px;"></div>
+            <div class="chart">
+                <h3>Compression Analysis</h3>
+                <table>
+                    <tr><th>Table</th><th>Before</th><th>After</th><th>Saved</th><th>Ratio</th></tr>
+                    <tr>
+                        <td>1-Day Chunks</td>
+                        <td>390 MB</td>
+                        <td class="highlight">183 MB</td>
+                        <td class="highlight">207 MB</td>
+                        <td>2.1x</td>
+                    </tr>
+                    <tr>
+                        <td>3-Hour Chunks</td>
+                        <td>396 MB</td>
+                        <td class="highlight">191 MB</td>
+                        <td class="highlight">205 MB</td>
+                        <td>2.1x</td>
+                    </tr>
+                    <tr>
+                        <td>1-Week Chunks</td>
+                        <td>390 MB</td>
+                        <td class="highlight">182 MB</td>
+                        <td class="highlight">208 MB</td>
+                        <td>2.1x</td>
+                    </tr>
+                </table>
+                <p style="margin-top:20px; color:#888;">
+                    <strong>Trade-off:</strong> Compression reduces storage by ~53% but increases 
+                    query time by 2-4x due to decompression overhead. Best for archival data.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECTION 7: PEAK PERIODS -->
+    <div class="section">
+        <h2>🔥 7. Peak Consumption Periods</h2>
+        <div class="grid">
+            <div class="chart" id="peak_periods" style="height:400px;"></div>
+            <div class="chart">
+                <h3>Top 10 Peak Consumption Times</h3>
+                <table>
+                    <tr><th>Rank</th><th>Period</th><th>Avg Power (W)</th></tr>
+                    <tr><td>1</td><td>2025-12-22 07:45:00+00:00</td><td class='warning'>2,290.93</td></tr><tr><td>2</td><td>2026-01-04 09:00:00+00:00</td><td class='warning'>2,289.77</td></tr><tr><td>3</td><td>2026-01-01 07:15:00+00:00</td><td class='warning'>2,288.95</td></tr><tr><td>4</td><td>2025-12-29 08:45:00+00:00</td><td class='warning'>2,288.21</td></tr><tr><td>5</td><td>2025-12-25 21:30:00+00:00</td><td class='warning'>2,287.57</td></tr><tr><td>6</td><td>2025-12-23 07:15:00+00:00</td><td class='warning'>2,286.28</td></tr><tr><td>7</td><td>2026-01-01 08:30:00+00:00</td><td class='warning'>2,284.30</td></tr><tr><td>8</td><td>2025-12-26 21:00:00+00:00</td><td class='warning'>2,284.13</td></tr><tr><td>9</td><td>2025-12-25 08:15:00+00:00</td><td class='warning'>2,283.80</td></tr><tr><td>10</td><td>2026-01-01 22:45:00+00:00</td><td class='warning'>2,283.19</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var darkLayout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            font: { color: '#fff' },
+            xaxis: { gridcolor: '#333', linecolor: '#333' },
+            yaxis: { gridcolor: '#333', linecolor: '#333' }
+        };
+
+        // 1. Daily Comparison (Today vs Yesterday)
+        Plotly.newPlot('daily_comparison', [
+            {
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                y: [349.66, 351.14, 348.73, 351.35, 349.39, 348.99, 2250.05, 2249.17, 2252.02, 2252.49, 1147.27, 1149.2, 1149.98, 1152.58, 1149.49, 1150.5, 1148.65, 1149.04, 2248.52, 2252.02, 2252.33, 2256.4, 2247.12, 349.62],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Today (Jan 4)',
+                line: { color: '#00d4ff', width: 3 }
+            },
+            {
+                x: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+                y: [350.05, 350.68, 348.73, 349.35, 351.48, 350.62, 2250.88, 2247.23, 2255.31, 2251.99, 1150.42, 1151.53, 1149.2, 1144.73, 1150.19, 1146.86, 1149.38, 1153.08, 2253.21, 2246.26, 2246.08, 2250.81, 2252.8, 350.78],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Yesterday (Jan 3)',
+                line: { color: '#ff6b6b', width: 2, dash: 'dash' }
+            }
+        ], {
+            ...darkLayout,
+            title: 'Daily Pattern: Today vs Yesterday',
+            xaxis: { ...darkLayout.xaxis, title: 'Hour of Day', dtick: 2 },
+            yaxis: { ...darkLayout.yaxis, title: 'Avg Power (W)' },
+            legend: { x: 0.02, y: 0.98 }
+        });
+
+        // 2. Hourly Distribution
+        Plotly.newPlot('hourly_distribution', [{
+            x: [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0, 23.0],
+            y: [350.15, 350.21, 349.82, 349.49, 349.94, 349.86, 2249.21, 2248.63, 2251.09, 2248.77, 1149.56, 1150.35, 1150.5, 1150.48, 1150.43, 1149.58, 1149.24, 1150.27, 2249.61, 2248.02, 2249.52, 2250.64, 2250.43, 349.93],
+            type: 'bar',
+            marker: { 
+                color: [350.15, 350.21, 349.82, 349.49, 349.94, 349.86, 2249.21, 2248.63, 2251.09, 2248.77, 1149.56, 1150.35, 1150.5, 1150.48, 1150.43, 1149.58, 1149.24, 1150.27, 2249.61, 2248.02, 2249.52, 2250.64, 2250.43, 349.93],
+                colorscale: [[0, '#00d4ff'], [0.5, '#00ff88'], [1, '#ff6b6b']]
+            }
+        }], {
+            ...darkLayout,
+            title: 'Average Power by Hour (All Days)',
+            xaxis: { ...darkLayout.xaxis, title: 'Hour', dtick: 2 },
+            yaxis: { ...darkLayout.yaxis, title: 'Avg Power (W)' }
+        });
+
+        // 3. Weekly Energy
+        Plotly.newPlot('weekly_energy', [{
+            x: ['2025-12-21 00:00:00+00:00', '2025-12-22 00:00:00+00:00', '2025-12-23 00:00:00+00:00', '2025-12-24 00:00:00+00:00', '2025-12-25 00:00:00+00:00', '2025-12-26 00:00:00+00:00', '2025-12-27 00:00:00+00:00', '2025-12-28 00:00:00+00:00', '2025-12-29 00:00:00+00:00', '2025-12-30 00:00:00+00:00', '2025-12-31 00:00:00+00:00', '2026-01-01 00:00:00+00:00', '2026-01-02 00:00:00+00:00', '2026-01-03 00:00:00+00:00', '2026-01-04 00:00:00+00:00'],
+            y: [86.74, 31900.36, 31901.17, 31905.68, 31902.16, 31883.13, 31901.68, 31885.19, 31873.03, 31901.14, 31896.23, 31897.95, 31885.81, 31901.63, 31847.44],
+            type: 'bar',
+            marker: { color: '#00d4ff' }
+        }], {
+            ...darkLayout,
+            title: 'Daily Energy Consumption (kWh)',
+            xaxis: { ...darkLayout.xaxis, title: 'Date', tickangle: 45 },
+            yaxis: { ...darkLayout.yaxis, title: 'Total Energy (kWh)' }
+        });
+
+        // 4. Weekly Power Trends
+        Plotly.newPlot('weekly_power', [
+            {
+                x: ['2025-12-21 00:00:00+00:00', '2025-12-22 00:00:00+00:00', '2025-12-23 00:00:00+00:00', '2025-12-24 00:00:00+00:00', '2025-12-25 00:00:00+00:00', '2025-12-26 00:00:00+00:00', '2025-12-27 00:00:00+00:00', '2025-12-28 00:00:00+00:00', '2025-12-29 00:00:00+00:00', '2025-12-30 00:00:00+00:00', '2025-12-31 00:00:00+00:00', '2026-01-01 00:00:00+00:00', '2026-01-02 00:00:00+00:00', '2026-01-03 00:00:00+00:00', '2026-01-04 00:00:00+00:00'],
+                y: [499.75, 2999.99, 3000.0, 2999.99, 2999.98, 3000.0, 2999.98, 3000.0, 2999.97, 2999.99, 3000.0, 2999.98, 3000.0, 2999.98, 2999.98],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Max Power',
+                line: { color: '#ff6b6b' }
+            },
+            {
+                x: ['2025-12-21 00:00:00+00:00', '2025-12-22 00:00:00+00:00', '2025-12-23 00:00:00+00:00', '2025-12-24 00:00:00+00:00', '2025-12-25 00:00:00+00:00', '2025-12-26 00:00:00+00:00', '2025-12-27 00:00:00+00:00', '2025-12-28 00:00:00+00:00', '2025-12-29 00:00:00+00:00', '2025-12-30 00:00:00+00:00', '2025-12-31 00:00:00+00:00', '2026-01-01 00:00:00+00:00', '2026-01-02 00:00:00+00:00', '2026-01-03 00:00:00+00:00', '2026-01-04 00:00:00+00:00'],
+                y: [346.95, 1329.18, 1329.22, 1329.4, 1329.26, 1328.46, 1329.24, 1328.55, 1328.04, 1329.21, 1329.01, 1329.08, 1328.58, 1329.23, 1336.26],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Avg Power',
+                line: { color: '#00ff88' }
+            },
+            {
+                x: ['2025-12-21 00:00:00+00:00', '2025-12-22 00:00:00+00:00', '2025-12-23 00:00:00+00:00', '2025-12-24 00:00:00+00:00', '2025-12-25 00:00:00+00:00', '2025-12-26 00:00:00+00:00', '2025-12-27 00:00:00+00:00', '2025-12-28 00:00:00+00:00', '2025-12-29 00:00:00+00:00', '2025-12-30 00:00:00+00:00', '2025-12-31 00:00:00+00:00', '2026-01-01 00:00:00+00:00', '2026-01-02 00:00:00+00:00', '2026-01-03 00:00:00+00:00', '2026-01-04 00:00:00+00:00'],
+                y: [200.0, 200.0, 200.01, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.0, 200.01, 200.0, 200.0, 200.0],
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Min Power',
+                line: { color: '#00d4ff' }
+            }
+        ], {
+            ...darkLayout,
+            title: 'Weekly Power Trends (Min/Avg/Max)',
+            xaxis: { ...darkLayout.xaxis, title: 'Date', tickangle: 45 },
+            yaxis: { ...darkLayout.yaxis, title: 'Power (W)' }
+        });
+
+        // 5. Regional Pie
+        Plotly.newPlot('regional_pie', [{
+            labels: ['Region 0 (Central)', 'Region 0 (Central)'],
+            values: [319036.5, 127532.83],
+            type: 'pie',
+            marker: { colors: ['#00d4ff', '#00ff88', '#ff6b6b', '#ffaa00', '#aa66ff', '#ff66aa', '#66ffaa', '#6699ff', '#ff9966', '#99ff66'] },
+            textinfo: 'percent',
+            hole: 0.4
+        }], {
+            ...darkLayout,
+            title: 'Energy Distribution by Region'
+        });
+
+        // 6. Regional Bar
+        Plotly.newPlot('regional_bar', [{
+            x: ['Region 0 (Central)', 'Region 0 (Central)'],
+            y: [1327.94, 1330.78],
+            type: 'bar',
+            marker: { color: '#00ff88' }
+        }], {
+            ...darkLayout,
+            title: 'Average Power by Region',
+            xaxis: { ...darkLayout.xaxis, title: 'Region', tickangle: 45 },
+            yaxis: { ...darkLayout.yaxis, title: 'Avg Power (W)' }
+        });
+
+        // 7. Performance Comparison
+        Plotly.newPlot('perf_comparison', [
+            {
+                x: ['15-Min Query', 'Hourly Query'],
+                y: [71.17, 94.71],
+                type: 'bar',
+                name: 'Raw Query',
+                marker: { color: '#ff6b6b' }
+            },
+            {
+                x: ['15-Min Query', 'Hourly Query'],
+                y: [23.40, 14.00],
+                type: 'bar',
+                name: 'Continuous Aggregate',
+                marker: { color: '#00ff88' }
+            }
+        ], {
+            ...darkLayout,
+            title: 'Raw Query vs Continuous Aggregate',
+            barmode: 'group',
+            yaxis: { ...darkLayout.yaxis, title: 'Time (ms)' }
+        });
+
+        // 8. Chunk Comparison
+        Plotly.newPlot('chunk_comparison', [{
+            x: ['3-Hour (113 chunks)', '1-Day (15 chunks)', '1-Week (3 chunks)'],
+            y: [233.41, 132.90, 80.19],
+            type: 'bar',
+            marker: { color: ['#ff6b6b', '#00ff88', '#00d4ff'] }
+        }], {
+            ...darkLayout,
+            title: 'Full Scan Query Time by Chunk Strategy',
+            yaxis: { ...darkLayout.yaxis, title: 'Time (ms)' }
+        });
+
+        // 9. Storage Comparison
+        Plotly.newPlot('storage_comparison', [
+            {
+                x: ['1-Day Chunks', '3-Hour Chunks', '1-Week Chunks'],
+                y: [390, 396, 390],
+                type: 'bar',
+                name: 'Before Compression',
+                marker: { color: '#ff6b6b' }
+            },
+            {
+                x: ['1-Day Chunks', '3-Hour Chunks', '1-Week Chunks'],
+                y: [183, 191, 182],
+                type: 'bar',
+                name: 'After Compression',
+                marker: { color: '#00ff88' }
+            }
+        ], {
+            ...darkLayout,
+            title: 'Storage: Before vs After Compression',
+            barmode: 'group',
+            yaxis: { ...darkLayout.yaxis, title: 'Size (MB)' }
+        });
+
+        // 10. Peak Periods
+        Plotly.newPlot('peak_periods', [{
+            x: ['2025-12-22 07:45:00+00:00', '2026-01-04 09:00:00+00:00', '2026-01-01 07:15:00+00:00', '2025-12-29 08:45:00+00:00', '2025-12-25 21:30:00+00:00', '2025-12-23 07:15:00+00:00', '2026-01-01 08:30:00+00:00', '2025-12-26 21:00:00+00:00', '2025-12-25 08:15:00+00:00', '2026-01-01 22:45:00+00:00'],
+            y: [2290.93, 2289.77, 2288.95, 2288.21, 2287.57, 2286.28, 2284.3, 2284.13, 2283.8, 2283.19],
+            type: 'bar',
+            marker: { color: '#ffaa00' }
+        }], {
+            ...darkLayout,
+            title: 'Top 10 Peak Consumption Periods',
+            xaxis: { ...darkLayout.xaxis, title: 'Time', tickangle: 45 },
+            yaxis: { ...darkLayout.yaxis, title: 'Avg Power (W)' }
+        });
+    </script>
+
+    <div style="text-align:center; margin-top:30px; padding:20px; border-top:1px solid #333;">
+        <p style="color:#666;">
+            Smart Energy Grid Monitoring System | MSDA9215 Big Data Analytics<br>
+            Generated: 2026-01-06 02:09:07 | 
+            Data: 4,033,000 readings | 1,000 meters | 14 days
+        </p>
+    </div>
+</body>
+</html>
