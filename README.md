@@ -4,7 +4,7 @@
 **Course:** MSDA9215 - Big Data Analytics  
 **Group Members:**
 - Niyonagize Festus (101025)
-- Mutuyeyesu Honorine (101027)
+- Mutuyeyesu Honorine (101026)
 - Tuyambaze Joseph (101028)
 
 ---
