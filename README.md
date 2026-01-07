@@ -161,9 +161,4 @@ Password: password
 - [TimescaleDB Documentation](https://docs.timescale.com/)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [EMQX MQTT Broker](https://www.emqx.io/)
-
----
-
-## 📄 License
-
-This project is for academic purposes - MSDA9215 Big Data Analytics course.
+- Big Data Course Materials
