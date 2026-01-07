@@ -156,16 +156,6 @@ Password: password
 
 ---
 
-## 👥 Work Distribution
-
-| Member | Responsibilities |
-|--------|------------------|
-| Niyonagize Festus | [Add contributions] |
-| Mutuyeyesu Honorine | [Add contributions] |
-| Tuyambaze Joseph | [Add contributions] |
-
----
-
 ## 📚 References
 
 - [TimescaleDB Documentation](https://docs.timescale.com/)
